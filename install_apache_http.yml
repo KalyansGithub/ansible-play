@@ -1,0 +1,39 @@
+---
+- name: install packages on webservers
+  hosts: all
+  become: true
+  tasks:
+  - name: install httpd
+    yum:
+      name: httpd
+      state: installed
+    when: ansible_os_family == "RedHat"
+    tags: install apache
+
+  - name: start httpd
+    service:
+      name: httpd
+      state: started
+    when: ansible_os_family == "RedHat"
+    tags: start apache
+    ignore_errors: yes
+
+  - name: install apache2
+    apt:
+      name: apache2
+      state: present
+    when: ansible_os_family == "Debian"
+    tags: install apache
+
+  - name: start apache2
+    service:
+      name: apache2
+      state: started
+    when: ansible_os_family == "Debian"
+    tags: start apache
+
+  - name: copy index file
+    copy:
+      src: /opt/ansible/index.html
+      dest: /var/www/html
+      mode: 0666
