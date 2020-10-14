@@ -1,0 +1,14 @@
+---
+- name: this playbook is to create users on hosts
+  hosts: all
+  become: true
+ 
+  tasks:
+  - name: create new users in hosts
+    user: 
+      name: "{{ item }}"
+      state: present
+    with_items:
+         - user1
+         - user2
+         - user3

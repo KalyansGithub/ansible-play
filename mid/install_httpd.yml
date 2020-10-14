@@ -1,17 +1,17 @@
 ---
-- name: install packages on webservers
-  hosts: webservers
+- name: install and start httpd using notify handlers
+  hosts: redhat
   become: true
+
   tasks:
   - name: install httpd
     yum:
       name: httpd
       state: installed
     notify: start httpd
+
   handlers:
   - name: start httpd
     service:
       name: httpd
       state: started
-
-

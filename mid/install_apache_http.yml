@@ -1,5 +1,5 @@
 ---
-- name: install packages on webservers
+- name: install start httpd apache using when tags
   hosts: all
   become: true
   tasks:
@@ -31,6 +31,7 @@
       state: started
     when: ansible_os_family == "Debian"
     tags: start apache
+    ignore_errors: yes
 
   - name: copy index file
     copy:

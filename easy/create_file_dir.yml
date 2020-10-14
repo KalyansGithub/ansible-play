@@ -1,0 +1,14 @@
+---
+- name: creating file or dir
+  hosts: all
+  # become: true
+  tasks:
+  - name: create a file
+    file:
+      path: /home/ansadmin/test.txt
+      state: touch
+  - name: create a directory
+    file: 
+      path: /home/ansadmin/dir
+      state: directory
+      mode: '0755'

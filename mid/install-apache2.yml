@@ -1,6 +1,6 @@
 ---
-- name: install packages on webservers
-  hosts: dbservers
+- name: install and start apache2 on ubuntu servers using notify handler
+  hosts: ubuntu
   become: true
   tasks:
   - name: install apache2
@@ -8,6 +8,7 @@
       name: apache2
       state: present
     notify: start apache2
+
   handlers:
   - name: start apache2
     service:

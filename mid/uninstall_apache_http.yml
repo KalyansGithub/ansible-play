@@ -1,5 +1,5 @@
 ---
-- name: uninstall packages on all servers
+- name: stop uninstall httpd apache using when 
   hosts: all
   become: true
   tasks:
@@ -8,6 +8,7 @@
       name: httpd
       state: stopped
     when: ansible_os_family == "RedHat"
+
   - name: uninstall httpd
     yum:
       name: httpd

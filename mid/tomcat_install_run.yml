@@ -8,6 +8,7 @@
       name: java
       state: installed
     when: ansible_os_family == 'RedHat'
+
   - name: install java on ubuntu
     apt:
       name: default-jdk
