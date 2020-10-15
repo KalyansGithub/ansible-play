@@ -1,0 +1,39 @@
+---
+# tasks file for mysql_db
+  - name: Install MySQL database
+    apt:
+      name: "{{ item }}"
+      state:  present
+    with_items:
+     - mysql-server
+     - mysql-client
+
+  - name: Start Mysql Service
+    service:
+      name: mysql
+      state: started
+      enabled: yes
+
+  - name: Create Application Database
+    mysql_db:
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+        name: "{{ db_name }}"
+        state: present
+
+  - name: Create Application DB User
+    mysql_user:
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+        name: "{{ db_user }}"
+        password: "{{ db_password }}"
+        priv: '*.*:ALL,GRANT'
+        host: '%'
+        state: present
+
+  - name: Move db-load-script to db host
+    copy:
+      src: /opt/ansible/diff/app-ex/db-load.sql
+      dest: /tmp/db-load.sql
+
+  - name: Load Inventory Data
+    shell: mysql -f < /tmp/db-load.sql
+

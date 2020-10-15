@@ -1,0 +1,56 @@
+---
+- name: Deploy and Configure web
+  hosts: webservers
+  become: true
+  tasks:
+
+    - name: install req packages
+      yum: 
+        name: "{{ item }}"
+        state: installed
+      with_items:
+         - httpd
+         - php
+         - php-mysql
+         - git
+         - firewalld
+
+    - name: enable firewall
+      service:
+        name: firewalld
+        state: started
+        enabled: yes
+
+    - name: Configure firewall for Webserver
+      firewalld:
+        port: 80/tcp
+        permanent: true
+        zone: public
+        immediate: true
+        state: enabled
+
+    - name: Configure httpd
+      shell: sed -i 's/index.html/index.php/g' /etc/httpd/conf/httpd.conf
+           
+    - name: start httpd service
+      service:
+           name: httpd
+           state: started
+           enabled: yes
+
+    - name: clone repo
+      git:
+        repo: https://github.com/KalyansGithub/learning-app-ecommerce.git
+        dest: /var/www/html/
+        force: yes
+
+
+    - name: update index.php
+      shell: sed -i 's/172.20.1.101/172.31.94.237/g' /var/www/html/index.php
+
+    - name: restart httpd service
+      service:
+           name: httpd
+           state: restarted
+           enabled: yes
+

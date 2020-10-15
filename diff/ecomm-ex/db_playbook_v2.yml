@@ -1,0 +1,54 @@
+---
+- hosts: dbservers
+  become: true
+  tasks:
+  - name: Install firewall mariadb
+    yum:
+      name: 
+         - firewalld
+         - mariadb-server
+         - MySQL-python
+      state: installed
+
+  - name: start and enable firewall 
+    service:
+      name: firewalld
+      state: started
+      enabled: yes
+
+  - name: start and enable  mariabd
+    service:
+      name: mariadb
+      state: started
+      enabled: yes
+
+
+  - name: Configure firewall for Database
+    firewalld:
+       port: 3306/tcp
+       permanent: true
+       zone: public
+       immediate: true
+       state: enabled
+
+  - name: create database 
+    mysql_db:
+       name: ecomdb
+       state: present
+
+  - name: Create Initial Accounts
+    shell: mysql -e "CREATE USER 'ecomuser'@'172.31.87.212' IDENTIFIED BY 'ecompassword';"
+
+  - name: Grant Privileges to New Account
+    shell: mysql -e "GRANT ALL ON *.* TO 'ecomuser'@'172.31.87.212' WITH GRANT OPTION;"
+
+  - name: Flush Privileges
+    shell: mysql -e "FLUSH PRIVILEGES;"
+
+  - name: Move db-load-script to db host
+    copy:
+      src: /opt/ansible/diff/db-load-script.sql
+      dest: /tmp/db-load-script.sql
+
+  - name: Load Inventory Data
+    shell: mysql -f < /tmp/db-load-script.sql
