@@ -1,6 +1,0 @@
----
-- name: install packages on webservers
-  hosts: all
-  become: true
-  roles: 
-    - setup-tomcat
